@@ -26,7 +26,7 @@
         <% @questions.each do |ques| %>
             <div class="row mb-sm-1">
                 <!--<div class="col-md-12">-->
-                    <div class="card float-left col-md-12" style="width: 80%;">
+                    <div class="card float-left col-md-12" style="width: 80%;" ques-id="<%= ques[:id] %>">
                         <div class="card-body p-sm-3">
                             <a href="/questions/<%= ques[:id] %>">
                                 <h4 class="card-title"><%= ques[:header] %></h4>
@@ -35,6 +35,14 @@
                                 <h6 class="card-subtitle mb-2 text-muted"><%= User.find_by_id(ques[:user_id])[:user_id] %></h6>
                             </a>
                             <p class="card-text ques-detail"><%= ques[:detail] %></p>
+                            <button class="btn btn-primary btn-sm upvote-btn" type="button" onclick="" role="button">
+                                Upvote
+                            </button>
+                            <span>
+                                <button class="btn btn-primary btn-sm downvote-btn" type="button" role="button" onclick="">
+                                    Downvote
+                                </button>
+                            </span>
                         </div>
                     </div>
                 <!--</div>-->

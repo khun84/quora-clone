@@ -11,6 +11,10 @@ $(document).ready(function () {
         ajaxShowAnswer();
     });
 
+    $('.upvote-btn').click(function () {
+
+    })
+
 });
 
 function ajaxShowQuestion() {
@@ -193,5 +197,7 @@ function displayErrorModal(data) {
     }
     $('#error-modal').modal('show');
 }
+
+
 
 
