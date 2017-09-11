@@ -36,11 +36,13 @@
                             </a>
                             <p class="card-text ques-detail"><%= ques[:detail] %></p>
                             <button class="btn btn-primary btn-sm upvote-btn" type="button" onclick="" role="button">
-                                Upvote
+                                Upvote<%= ques.upvote_count > 0 ? " | #{ques.upvote_count}" : "" %>
                             </button>
                             <span>
-                                <button class="btn btn-primary btn-sm downvote-btn" type="button" role="button" onclick="">
-                                    Downvote
+                                <button class="btn btn-primary btn-sm downvote-btn"
+                                        type="button" role="button" onclick="" count=<%= ques.downvote_count %>
+                                            downvoted=<%= (downvoted_by_user?(ques.id) == true).to_s %>>
+                                    Downvote<%= ques.downvote_count > 0 ? " | #{ques.downvote_count}" : "" %>
                                 </button>
                             </span>
                         </div>

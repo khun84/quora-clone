@@ -23,6 +23,9 @@ require "sinatra/reloader" if development?
 	# embedded ruby
 require 'erb'
 require 'uri'
+
+  # custom module
+require_relative '../../app/helpers/vote'
 ######################################################################
 
 

@@ -11,11 +11,57 @@ $(document).ready(function () {
         ajaxShowAnswer();
     });
 
-    $('.upvote-btn').click(function () {
+    var $downvoteBtn = $('.downvote-btn');
+    for(var i=0; i < $downvoteBtn.length; i++){
+        if($downvoteBtn[i].getAttribute('downvoted') == 'true'){
+            $($downvoteBtn[i]).addClass('bg-grey b-grey');
+        }
+    }
+
+    $('.downvote-btn').click(function () {
+        var $this = $(this);
+        var quesId = $(this).closest('.card').attr('ques-id');
+        var voted = $(this).attr('downvoted');
+        $.ajax({
+            url:`/questions/${quesId}/downvote`,
+            method:'get',
+            format:'json',
+            error: function (response) {
+                console.log(response);
+            },
+            success: function (response) {
+                console.log(response);
+                response = JSON.parse(response);
+                if(response.flags){
+                    displayErrorModal(response);
+                }else{
+                    if (response.downvote_count > 0){
+                        console.log(`Downvote | ${response.downvote_count}`);
+                        $this[0].innerHTML = (`Downvote | ${response.downvote_count}`);
+                    }else{
+                        $this[0].innerHTML = ('Downvote');
+                    }
+                    if ($this.attr('downvoted') === "false"){
+                        console.log($this.attr('downvoted'));
+                        $this.addClass('bg-grey b-grey');
+                        $this.attr('downvoted', "true");
+                    }else{
+                        console.log($this.attr('downvoted'));
+                        $this.removeClass('bg-grey b-grey');
+                        $this.attr('downvoted', "false");
+
+                    }
+                }
+            }
+        })
 
     })
 
 });
+
+function ajaxDownVote() {
+    $.ajax
+}
 
 function ajaxShowQuestion() {
     $.ajax({

@@ -79,7 +79,7 @@ get '/users/:user_id/questions/:ques_id/upvote' do
     if !is_voted?(params[:user_id], params[:ques_id])
       upvote = QuestionVote.new
       upvote[:user_id] = params[:user_id]
-      upvote[:ques_id] = params[:ques_id]
+      upvote[:article_id] = params[:ques_id]
       upvote[:direction] = 'UP'
 
       if upvote.save
@@ -111,37 +111,53 @@ get '/users/:user_id/questions/:ques_id/upvote' do
   end
 end
 
-get '/users/:user_id/questions/:ques_id/downvote' do
+get '/questions/:ques_id/downvote' do
   if logged_in?
     # assuming the question being voted always exists
-    if !is_voted?(params[:user_id], params[:ques_id])
-      downvote = QuestionVote.new
-      downvote[:user_id] = params[:user_id]
-      downvote[:ques_id] = params[:ques_id]
-      downvote[:direction] = 'DOWN'
+    params[:user_id] = session[:user_id]
+    downvote = QuestionVote.new
+    downvote[:user_id] = params[:user_id]
+    downvote[:article_id] = params[:ques_id]
+    downvote[:direction] = 'DOWN'
 
-      if downvote.save
-        return {downvote_count: ques_downvote_count(params[:ques_id])}.to_json
-      else
+    question = Question.find_by_id(params[:ques_id])
+
+    if downvote.is_voted_by_user?
+      downvote = QuestionVote.where("user_id = ? and article_id = ?", downvote[:user_id], downvote[:article_id])[0]
+      previous_direction = downvote.direction
+      downvote.direction = "DOWN" if downvote.direction != "DOWN"
+      if downvote.is_downvoted_by_user?
+        # delete the vote if its a repeated vote action
+        downvote.destroy
+        question.reduce_downvote
+      end
+
+    else
+
+      # save the downvote create or edit action
+      if !downvote.save
         errors = flag_error_msg(downvote.errors.messages)
         return errors.to_json
+      else
+        question.add_downvote
       end
     end
 
-    if !is_downvoted(params[:user_id], params[:ques_id])
-      downvote = QuestionVote.where("user_id = ? and question_id = ?", params[:user_id], params[:ques_id])[0]
 
-      downvote.direction = 'UP'
-
-      if downvote.save
-        return {downvote_count: ques_downvote_count(params[:ques_id])}.to_json
-      else
-        errors = flag_error_msg(downvote.errors.messages)
-        return erros.to_json
-      end
+    if question.save
+      return {downvote_count: question.downvote_count}.to_json
     else
-      errors = {double_vote: ["Can only downvote once for each question!"]}.to_json
-      return errors
+
+      if previous_direction.nil?
+      # reverse the vote create action
+        downvote.destroy
+      else
+      # reverse the vote edit action
+        downvote.direction = previous_direction
+        downvote.save
+      end
+      errors = flag_error_msg(downvote.errors.messages)
+      return errors.to_json
     end
 
   else

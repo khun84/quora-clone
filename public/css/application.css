@@ -41,6 +41,14 @@ div.signup {
 
 }
 
+.bg-grey {
+    background-color: grey;
+}
+
+.b-grey {
+    border-color: grey;
+}
+
 /*#profile-badge {*/
     /*vertical-align: middle;*/
 /*}*/
